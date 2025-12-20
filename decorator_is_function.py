@@ -23,6 +23,7 @@ print(my_function())  # whenever a decorated function is called, it actually cal
 
 
 import time
+from datetime import datetime
 
 def time_it(fun):
     def wrapper(*args, **kwargs): # *args and **kwargs inside function definition will pack positional and keyword arguments into tuples(=args) and dictionaries(=kwargs) respectively.
@@ -46,7 +47,7 @@ def is_prime(n):
             return False
     return True;
 
-arr = list(range(0,1000000)) # range gets converted to list
+arr = list(range(0,10)) # range gets converted to list
 
 prime_nums = filter_primes(is_prime, arr) # filter function returns an array of elements, which gave an output of True via filter function
 # print(list(prime_nums))
@@ -55,3 +56,24 @@ prime_nums = filter_primes(is_prime, arr) # filter function returns an array of 
 # using a decorator is the same as calling the decorator function with the target function as an argument.
 # i.e., filter_primes = time_it(filter_primes)
 # infact this is exactly what the @ syntax does behind the scenes.
+
+
+
+
+def get_current_datetime(base_func):
+    def wrapper(*args , **kwargs):
+        print("timed at : ", str(datetime.now()))
+        return base_func(*args , **kwargs)
+
+    return wrapper
+
+
+# ex3- one could stack the decorators as well
+
+@get_current_datetime
+@time_it # by making time_it a decorator we can time any function we want without changing its core logic. 
+def filter_primes(is_prime, arr):
+    # stacking decorators like this is the same as calling get_current_datetime(time_it(filter_primes)), the topmost decorator being applied the last.
+    return list(filter(is_prime, arr))
+
+print(filter_primes(is_prime, arr))
